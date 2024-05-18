@@ -1,0 +1,40 @@
+version: '3.5'
+
+services:
+  nest_form_postgres:
+    container_name: clothing_store_pg
+    image: postgres:14
+    environment:
+      POSTGRES_USER: nest
+      POSTGRES_PASSWORD: nest
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/var/www/nest_test/docker-volumes/postgres
+    ports:
+      - 127.0.0.1:5432:5432
+    networks:
+      - clothing_store
+    restart: unless-stopped
+
+  nest_form_pgadmin:
+    container_name: clothing_store_pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: nest@admin.com
+      PGADMIN_DEFAULT_PASSWORD: nest
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/www/nest_test/docker-volumes/pgadmin
+    ports:
+      - 127.0.0.1:5050:80
+    networks:
+      - clothing_store
+    restart: unless-stopped
+
+networks:
+  clothing_store:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
