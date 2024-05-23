@@ -1,11 +1,11 @@
 import {ApiProperty} from "@nestjs/swagger";
-import {IsString} from "class-validator";
+import {IsNumber, IsString} from "class-validator";
 import {Category} from "../../category/entities/category.entity";
 
 export class CreateProductDto {
     @ApiProperty({
         default: '1',
-        required:false
+        required: false
     })
     @IsString()
     product_id: string;
@@ -35,7 +35,20 @@ export class CreateProductDto {
     product_image: string;
 
     @ApiProperty({
-            default: '31'
+        default: 1234,
+    })
+    @IsNumber()
+    product_price: number;
+    @ApiProperty({
+        maximum:1,
+        minimum:0,
+        default: 0,
+    })
+    @IsNumber()
+    product_discount:number
+
+    @ApiProperty({
+        default: '31'
     })
     category_id: Category;
 }
