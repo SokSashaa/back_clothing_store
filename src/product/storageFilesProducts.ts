@@ -5,6 +5,6 @@ export const pathUploadProduct = './uploads/products'
 export const fileStorage = diskStorage(
     {
         destination: pathUploadProduct,
-        filename: normalSizeFileName
+        filename: normalSizeFileName,
     }
 )

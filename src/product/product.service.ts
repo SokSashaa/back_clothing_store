@@ -40,10 +40,12 @@ export class ProductService {
         return this.repository.findOneBy({product_id: id})
     }
 
-    getAllProductsByIDCategory(id: string) {
-        return this.repository.findBy({
+    async getAllProductsByIDCategory(id: string) {
+        const t = await this.repository.findBy({
             category: {category_id: id}
         })
+        console.log(t)
+        return  t
     }
 
 }

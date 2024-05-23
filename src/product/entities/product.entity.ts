@@ -19,10 +19,14 @@ export class Product {
     @Column()
     product_image: string
 
-    @Column()
+    @Column({
+        type:'real'
+    })
     product_price: number
 
-    @Column()
+    @Column({
+        type:'real'
+    })
     product_discount: number
 
     @ManyToOne(() => Category, category => category.category_id)

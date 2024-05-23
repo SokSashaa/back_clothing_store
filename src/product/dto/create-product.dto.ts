@@ -36,14 +36,19 @@ export class CreateProductDto {
 
     @ApiProperty({
         default: 1234,
+        type:'number',
+        format: 'double'
     })
     @IsNumber()
     product_price: number;
+
     @ApiProperty({
         default: 0,
+        type:'number',
+        format: 'double'
     })
     @IsNumber()
-    product_discount:number
+    product_discount: number
 
     @ApiProperty({
         default: '31'
