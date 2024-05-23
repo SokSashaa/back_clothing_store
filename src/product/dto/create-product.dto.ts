@@ -40,8 +40,6 @@ export class CreateProductDto {
     @IsNumber()
     product_price: number;
     @ApiProperty({
-        maximum:1,
-        minimum:0,
         default: 0,
     })
     @IsNumber()
