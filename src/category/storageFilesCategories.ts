@@ -1,9 +1,11 @@
 import {diskStorage} from "multer";
 import {normalSizeFileName} from "../utils/forFiles";
 
+
+export const pathUploadCategory = './uploads/categories'
 export const fileStorage = diskStorage(
     {
-        destination: './uploads/categories',
+        destination: pathUploadCategory,
         filename: normalSizeFileName
     }
 )
