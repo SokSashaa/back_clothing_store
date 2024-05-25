@@ -40,12 +40,14 @@ export class ProductService {
         return this.repository.findOneBy({product_id: id})
     }
 
-    async getAllProductsByIDCategory(id: string) {
-        const t = await this.repository.findBy({
+    getAllProductsByIDCategory(id: string) {
+        return this.repository.findBy({
             category: {category_id: id}
         })
-        console.log(t)
-        return  t
+    }
+
+    searchProductByPartName(partName:string){
+        return this.repository.query(`select * from product where product_name ILIKE '%${partName}%' order by product_name`)
     }
 
 }

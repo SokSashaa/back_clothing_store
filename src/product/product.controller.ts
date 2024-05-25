@@ -1,5 +1,4 @@
 import {
-    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -14,10 +13,10 @@ import {
 } from '@nestjs/common';
 import {ProductService} from './product.service';
 import {CreateProductDto} from './dto/create-product.dto';
-import {ApiConsumes, ApiOperation, ApiParam, ApiTags} from "@nestjs/swagger";
+import {ApiConsumes, ApiOperation, ApiParam, ApiQuery, ApiTags} from "@nestjs/swagger";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {fileStorage} from "./storageFilesProducts";
-import {Category} from "../category/entities/category.entity";
+
 
 
 @Controller('product')
@@ -61,5 +60,12 @@ export class ProductController {
     @ApiParam({name:'id',type:'string'})
     getAllProductsByIDCategory(@Param('id') id:string){
         return this.productService.getAllProductsByIDCategory(id)
+    }
+
+    @Get('/search/:name')
+    @ApiOperation({summary:'Поиск по названию всех продуктов'})
+    @ApiParam({name:'name',type:'string'})
+    searchAllProductsByPartName(@Param('name') partName:string){
+        return this.productService.searchProductByPartName(partName)
     }
 }
