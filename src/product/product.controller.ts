@@ -63,9 +63,16 @@ export class ProductController {
     }
 
     @Get('/search/:name')
-    @ApiOperation({summary:'Поиск по названию всех продуктов'})
+    @ApiOperation({summary:'Поиск по названию всех продуктов (лимит 10)'})
+    @ApiParam({name:'name',type:'string'})
+    searchTenProductsByPartName(@Param('name') partName:string){
+        return this.productService.searchTenProductByPartName(partName)
+    }
+
+    @Get('/searchAll/:name')
+    @ApiOperation({summary:'Поиск по названию всех продуктов (лимит 10)'})
     @ApiParam({name:'name',type:'string'})
     searchAllProductsByPartName(@Param('name') partName:string){
-        return this.productService.searchProductByPartName(partName)
+        return this.productService.searchAllProductByPartName(partName)
     }
 }
