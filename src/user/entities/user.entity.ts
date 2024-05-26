@@ -1,32 +1,29 @@
-import {Roles} from "../consts/enums";
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import { Roles } from '../consts/enums';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: string;
+  @PrimaryGeneratedColumn()
+  id: string;
 
-    @Column()
-    firstname: string;
+  @Column()
+  firstname: string;
 
-    @Column()
-    lastname: string;
+  @Column()
+  lastname: string;
 
-    @Column()
-    email: string;
+  @Column()
+  email: string;
 
-    // @Column()
-    // login: string;
+  @Column()
+  password: string;
 
-    @Column()
-    password: string;
+  @Column()
+  role: Roles;
 
-    @Column()
-    role: Roles;
+  @Column()
+  date_reg: Date;
 
-    @Column()
-    date_reg: Date;
-
-    @Column()
-    date_birthday: Date;
+  @Column()
+  date_birthday: Date;
 }

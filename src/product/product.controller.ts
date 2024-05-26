@@ -1,78 +1,77 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    FileTypeValidator,
-    Get,
-    MaxFileSizeValidator, Param,
-    ParseFilePipe,
-    Post,
-    Query,
-    UploadedFile,
-    UseInterceptors
+  Body,
+  Controller,
+  Delete,
+  FileTypeValidator,
+  Get,
+  MaxFileSizeValidator,
+  Param,
+  ParseFilePipe,
+  Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import {ProductService} from './product.service';
-import {CreateProductDto} from './dto/create-product.dto';
-import {ApiConsumes, ApiOperation, ApiParam, ApiQuery, ApiTags} from "@nestjs/swagger";
-import {FileInterceptor} from "@nestjs/platform-express";
-import {fileStorage} from "./storageFilesProducts";
-
-
+import { ProductService } from './product.service';
+import { CreateProductDto } from './dto/create-product.dto';
+import { ApiConsumes, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { fileStorage } from './storageFilesProducts';
 
 @Controller('product')
 @ApiTags('product')
 export class ProductController {
-    constructor(private readonly productService: ProductService) {
-    }
+  constructor(private readonly productService: ProductService) {}
 
-    @Post('/create')
-    @UseInterceptors(FileInterceptor('product_image', {storage: fileStorage}))
-    @ApiOperation({summary:'Создание продукта'})
-    @ApiConsumes('multipart/form-data') //type req
-    create(
-        @UploadedFile(new ParseFilePipe({
-                validators: [
-                    new MaxFileSizeValidator({maxSize: 1024 * 1024 * 5}),
-                    new FileTypeValidator({fileType: '/png|jpeg/'})
-                ]
-            })
-        )
-            file: Express.Multer.File,
-        @Body() dto: CreateProductDto) {
-        return this.productService.createProduct(dto, file)
-    }
+  @Post('/create')
+  @UseInterceptors(FileInterceptor('product_image', { storage: fileStorage }))
+  @ApiOperation({ summary: 'Создание продукта' })
+  @ApiConsumes('multipart/form-data') //type req
+  create(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }),
+          new FileTypeValidator({ fileType: '/png|jpeg/' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @Body() dto: CreateProductDto,
+  ) {
+    return this.productService.createProduct(dto, file);
+  }
 
-    @Delete('/delete')
-    @ApiOperation({summary:'Удаление продукта'})
-    removeProduct(@Body() dto: CreateProductDto) {
-        return this.productService.removeProduct(dto)
-    }
+  @Delete('/delete')
+  @ApiOperation({ summary: 'Удаление продукта' })
+  removeProduct(@Body() dto: CreateProductDto) {
+    return this.productService.removeProduct(dto);
+  }
 
-    @Get(':id')
-    @ApiOperation({summary:'Поиск по айди продукта'})
-    @ApiParam({name:'id',type:'string'})
-    getProductById(@Param('id') id:string) {
-        return this.productService.getProductByID(id)
-    }
+  @Get(':id')
+  @ApiOperation({ summary: 'Поиск по айди продукта' })
+  @ApiParam({ name: 'id', type: 'string' })
+  getProductById(@Param('id') id: string) {
+    return this.productService.getProductByID(id);
+  }
 
-    @Get('category/:id')
-    @ApiOperation({summary:'Поиск всех продуктов по айди категории'})
-    @ApiParam({name:'id',type:'string'})
-    getAllProductsByIDCategory(@Param('id') id:string){
-        return this.productService.getAllProductsByIDCategory(id)
-    }
+  @Get('category/:id')
+  @ApiOperation({ summary: 'Поиск всех продуктов по айди категории' })
+  @ApiParam({ name: 'id', type: 'string' })
+  getAllProductsByIDCategory(@Param('id') id: string) {
+    return this.productService.getAllProductsByIDCategory(id);
+  }
 
-    @Get('/search/:name')
-    @ApiOperation({summary:'Поиск по названию всех продуктов (лимит 10)'})
-    @ApiParam({name:'name',type:'string'})
-    searchTenProductsByPartName(@Param('name') partName:string){
-        return this.productService.searchTenProductByPartName(partName)
-    }
+  @Get('/search/:name')
+  @ApiOperation({ summary: 'Поиск по названию всех продуктов (лимит 10)' })
+  @ApiParam({ name: 'name', type: 'string' })
+  searchTenProductsByPartName(@Param('name') partName: string) {
+    return this.productService.searchTenProductByPartName(partName);
+  }
 
-    @Get('/searchAll/:name')
-    @ApiOperation({summary:'Поиск по названию всех продуктов (лимит 10)'})
-    @ApiParam({name:'name',type:'string'})
-    searchAllProductsByPartName(@Param('name') partName:string){
-        return this.productService.searchAllProductByPartName(partName)
-    }
+  @Get('/searchAll/:name')
+  @ApiOperation({ summary: 'Поиск по названию всех продуктов (лимит 10)' })
+  @ApiParam({ name: 'name', type: 'string' })
+  searchAllProductsByPartName(@Param('name') partName: string) {
+    return this.productService.searchAllProductByPartName(partName);
+  }
 }
