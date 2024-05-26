@@ -46,8 +46,12 @@ export class ProductService {
         })
     }
 
-    searchProductByPartName(partName:string){
+    searchTenProductByPartName(partName:string){
         return this.repository.query(`select * from product where product_name ILIKE '%${partName}%' order by product_name limit 10`)
+    }
+
+    searchAllProductByPartName(partName:string){
+        return this.repository.query(`select * from product where product_name ILIKE '%${partName}%' order by product_name`)
     }
 
 }
