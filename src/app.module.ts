@@ -5,17 +5,22 @@ import { UserModule } from './user/user.module';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
 import { AuthModule } from './auth/auth.module';
-import {TypeOrmModule} from "@nestjs/typeorm";
-import {User} from "./user/entities/user.entity";
-import {Category} from "./category/entities/category.entity";
-import {Product} from "./product/entities/product.entity";
-import * as process from "process";
-import {ConfigModule} from "@nestjs/config";
-
-
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './user/entities/user.entity';
+import { Category } from './category/entities/category.entity';
+import { Product } from './product/entities/product.entity';
+import * as process from 'process';
+import { ConfigModule } from '@nestjs/config';
+import { CompanyModule } from './company/company.module';
+import { Company } from './company/entities/company.entity';
 
 @Module({
-  imports: [UserModule, ProductModule, CategoryModule, AuthModule,ConfigModule.forRoot(),
+  imports: [
+    UserModule,
+    ProductModule,
+    CategoryModule,
+    AuthModule,
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRESS_DB_URL,
@@ -23,9 +28,11 @@ import {ConfigModule} from "@nestjs/config";
       username: process.env.POSTGRESS_DB_USER,
       password: process.env.POSTGRESS_DB_PASSWORD,
       database: process.env.POSTGRESS_DB_NAME,
-      entities: [User,Category,Product],
+      entities: [User, Category, Product, Company],
       synchronize: true,
-    }),],
+    }),
+    CompanyModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
