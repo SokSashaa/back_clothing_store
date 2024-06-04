@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 import { Category } from '../../category/entities/category.entity';
+import { Company } from '../../company/entities/company.entity';
 
 export class CreateProductDto {
   @ApiProperty({
@@ -50,4 +51,7 @@ export class CreateProductDto {
     default: '31',
   })
   category_id: Category;
+
+  @ApiProperty({ default: '28' })
+  company_id: Company;
 }

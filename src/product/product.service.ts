@@ -21,6 +21,7 @@ export class ProductService {
       product_price: data.product_price,
       product_discount: data.product_discount,
       category: data.category_id,
+      company: data.company_id,
     });
   }
 

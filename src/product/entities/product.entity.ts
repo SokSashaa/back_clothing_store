@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Company } from '../../company/entities/company.entity';
+import { Type } from 'class-transformer';
 
 @Entity()
 export class Product {
@@ -37,6 +38,7 @@ export class Product {
 
   @ManyToOne(() => Category, (category) => category.category_id)
   @JoinColumn()
+  @Type(() => Category)
   category: Category;
 
   @ManyToOne(() => Company, (company: Company) => company.id)
