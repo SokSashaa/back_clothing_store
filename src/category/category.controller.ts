@@ -2,12 +2,10 @@ import {
   Body,
   Controller,
   Delete,
-  FileTypeValidator,
   Get,
-  MaxFileSizeValidator,
   Param,
-  ParseFilePipe,
   Post,
+  Put,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -23,7 +21,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { fileStorage } from './storageFilesCategories';
+import { localOptions } from './storageFilesCategories';
 import { Roles } from '../user/consts/enums';
 import { Role } from '../decorators/role.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
@@ -53,7 +51,7 @@ export class CategoryController {
   @ApiBearerAuth()
   @Role(Roles.admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseInterceptors(FileInterceptor('file', { storage: fileStorage }))
+  @UseInterceptors(FileInterceptor('file', localOptions))
   @ApiOperation({ summary: 'Создание категории' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -72,18 +70,11 @@ export class CategoryController {
     },
   })
   create(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }),
-          new FileTypeValidator({ fileType: '/png|jpeg/' }),
-        ],
-      }),
-    )
-    file: Express.Multer.File,
     @Body() dto: CreateCategoryDto,
+    @UploadedFile()
+    file?: Express.Multer.File,
   ) {
-    return this.categoryService.create(file, dto);
+    return this.categoryService.create(dto, file);
   }
 
   @Get(':id')
@@ -91,5 +82,36 @@ export class CategoryController {
   @ApiParam({ name: 'id', type: 'string' })
   getCategoryByID(@Param('id') id: string) {
     return this.categoryService.getCategoryByID(id);
+  }
+
+  @Put()
+  @ApiOperation({ summary: 'Обновление категории' })
+  @UseInterceptors(FileInterceptor('file', localOptions))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        category_id: {
+          type: 'string',
+          default: '31',
+        },
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+        category_name: {
+          type: 'string',
+          default: 'СИЗ',
+        },
+      },
+    },
+  })
+  updateCategory(
+    @Body() dto: CreateCategoryDto,
+    @UploadedFile()
+    file?: Express.Multer.File,
+  ) {
+    return this.categoryService.updateCategory(dto, file);
   }
 }
