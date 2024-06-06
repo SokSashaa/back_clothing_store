@@ -2,14 +2,11 @@ import {
   Body,
   Controller,
   Delete,
-  FileTypeValidator,
   Get,
-  MaxFileSizeValidator,
   Param,
-  ParseFilePipe,
   Post,
   Put,
-  UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -22,8 +19,8 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { fileStorage } from './storageFilesProducts';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { localOptions } from './storageFilesProducts';
 import { Role } from '../decorators/role.decorator';
 import { Roles } from '../user/consts/enums';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -38,22 +35,19 @@ export class ProductController {
   @ApiBearerAuth()
   @Role(Roles.producer, Roles.admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseInterceptors(FileInterceptor('product_image', { storage: fileStorage }))
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [{ name: 'product_image', maxCount: 5 }],
+      localOptions,
+    ),
+  )
   @ApiOperation({ summary: 'Создание продукта' })
   @ApiConsumes('multipart/form-data')
   create(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }),
-          new FileTypeValidator({ fileType: '/png|jpeg/' }),
-        ],
-      }),
-    )
-    file: Express.Multer.File,
     @Body() dto: CreateProductDto,
+    @UploadedFiles() files?: Express.Multer.File[],
   ) {
-    return this.productService.createProduct(dto, file);
+    return this.productService.createProduct(dto, files);
   }
 
   @Delete('/delete')
@@ -70,8 +64,18 @@ export class ProductController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Put('/update')
   @ApiOperation({ summary: 'Обновление продукта' })
-  updateProduct(@Body() dto: CreateProductDto) {
-    return this.productService.updateProduct(dto);
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [{ name: 'product_image', maxCount: 5 }],
+      localOptions,
+    ),
+  )
+  @ApiConsumes('multipart/form-data')
+  updateProduct(
+    @Body() dto: CreateProductDto,
+    @UploadedFiles() file?: Express.Multer.File[],
+  ) {
+    return this.productService.updateProduct(dto, file);
   }
 
   @Get(':id')

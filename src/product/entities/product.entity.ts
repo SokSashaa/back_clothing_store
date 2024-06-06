@@ -23,7 +23,7 @@ export class Product {
   @Column()
   product_description: string;
 
-  @Column()
+  @Column({ nullable: true })
   product_image: string;
 
   @Column({
@@ -33,6 +33,7 @@ export class Product {
 
   @Column({
     type: 'real',
+    default: 0,
   })
   product_discount: number;
 
