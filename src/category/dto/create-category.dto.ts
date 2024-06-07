@@ -6,11 +6,16 @@ export class CreateCategoryDto {
   // @IsString()
   category_id: string;
 
-  @ApiProperty({ default: 'СИЗ' })
+  @ApiProperty({ default: 'СИЗ', type: 'string' })
   @IsString()
   category_name: string;
 
-  @ApiProperty({ default: 'siz.png', required: false })
+  @ApiProperty({
+    default: 'siz.png',
+    required: false,
+    type: 'string',
+    format: 'binary',
+  })
   @IsString()
   @IsOptional()
   category_img_name: string;

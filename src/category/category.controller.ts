@@ -51,24 +51,9 @@ export class CategoryController {
   @ApiBearerAuth()
   @Role(Roles.admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseInterceptors(FileInterceptor('file', localOptions))
+  @UseInterceptors(FileInterceptor('category_img_name', localOptions))
   @ApiOperation({ summary: 'Создание категории' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-        category_name: {
-          type: 'string',
-          default: 'СИЗ',
-        },
-      },
-    },
-  })
   create(
     @Body() dto: CreateCategoryDto,
     @UploadedFile()
@@ -88,25 +73,6 @@ export class CategoryController {
   @ApiOperation({ summary: 'Обновление категории' })
   @UseInterceptors(FileInterceptor('file', localOptions))
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        category_id: {
-          type: 'string',
-          default: '31',
-        },
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-        category_name: {
-          type: 'string',
-          default: 'СИЗ',
-        },
-      },
-    },
-  })
   updateCategory(
     @Body() dto: CreateCategoryDto,
     @UploadedFile()
