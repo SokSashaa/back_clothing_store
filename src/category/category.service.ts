@@ -61,10 +61,7 @@ export class CategoryService {
     });
 
     if (categoryFound === null) {
-      throw new HttpException(
-        'Не удалось обновить категорию',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException('Категория не найдена', HttpStatus.NOT_FOUND);
     }
 
     if (file) {
