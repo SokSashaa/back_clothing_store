@@ -38,18 +38,23 @@ export class ProductService {
     return resultFileName;
   };
 
-  createProduct(data: CreateProductDto, files?: Express.Multer.File[]) {
+  async createProduct(data: CreateProductDto, files?: Express.Multer.File[]) {
     const resultFileName = this.createFilenameString(files);
-    return this.repository.save({
-      article: data.article,
-      product_name: data.product_name,
-      product_description: data.product_description,
-      product_image: resultFileName,
-      product_price: data.product_price,
-      product_discount: data.product_discount,
-      category: data.category_id,
-      company: data.company_id,
-    });
+    return this.repository
+      .save({
+        article: data.article,
+        product_name: data.product_name,
+        product_description: data.product_description,
+        product_image: resultFileName,
+        product_price: data.product_price,
+        product_discount: data.product_discount,
+        category: data.category_id,
+        company: data.company_id,
+      })
+      .catch(async () => {
+        await this.delFileImage(resultFileName);
+        throw new HttpException('Произошла ошибка', HttpStatus.BAD_REQUEST);
+      });
   }
 
   async removeProduct(data: CreateProductDto) {
@@ -67,8 +72,12 @@ export class ProductService {
     return this.repository.delete({ product_id: data.product_id });
   }
 
-  getProductByID(id: string) {
-    return this.repository.findOneBy({ product_id: id });
+  async getProductByID(id: string) {
+    const result = await this.repository.findOneBy({ product_id: id });
+    if (result === null) {
+      throw new HttpException('Не удалось найти продукт', HttpStatus.NOT_FOUND);
+    }
+    return result;
   }
 
   getAllProductsByIDCategory(id: string) {
@@ -90,7 +99,7 @@ export class ProductService {
   }
 
   async updateProduct(data: CreateProductDto, files?: Express.Multer.File[]) {
-    console.log(files);
+    let isError = false;
     const productFound = await this.repository.findOneBy({
       product_id: data.product_id,
     });
@@ -103,31 +112,49 @@ export class ProductService {
     }
     if ('product_image' in files) {
       const product_image = productFound.product_image;
-      await this.delFileImage(product_image);
       const resultFilename = this.createFilenameString(files);
-      return this.repository.update(
-        { product_id: data.product_id },
-        {
-          article: data.article,
-          product_name: data.product_name,
-          product_description: data.product_description,
-          product_price: data.product_price,
-          product_discount: data.product_discount,
-          product_image: resultFilename,
-          category: data.category_id,
-        },
-      );
+      return this.repository
+        .update(
+          { product_id: data.product_id },
+          {
+            article: data.article,
+            product_name: data.product_name,
+            product_description: data.product_description,
+            product_price: data.product_price,
+            product_discount: data.product_discount,
+            product_image: resultFilename,
+            category: data.category_id,
+          },
+        )
+        .catch(async () => {
+          isError = true;
+          await this.delFileImage(resultFilename); // delete new files
+          throw new HttpException(
+            'Не удалось обновить',
+            HttpStatus.BAD_REQUEST,
+          );
+        })
+        .finally(async () => {
+          if (!isError) await this.delFileImage(product_image); // delete old files
+        });
     } else
-      return this.repository.update(
-        { product_id: data.product_id },
-        {
-          article: data.article,
-          product_name: data.product_name,
-          product_description: data.product_description,
-          product_price: data.product_price,
-          product_discount: data.product_discount,
-          category: data.category_id,
-        },
-      );
+      return this.repository
+        .update(
+          { product_id: data.product_id },
+          {
+            article: data.article,
+            product_name: data.product_name,
+            product_description: data.product_description,
+            product_price: data.product_price,
+            product_discount: data.product_discount,
+            category: data.category_id,
+          },
+        )
+        .catch(() => {
+          throw new HttpException(
+            'Не удалось обновить',
+            HttpStatus.BAD_REQUEST,
+          );
+        });
   }
 }

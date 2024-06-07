@@ -47,8 +47,12 @@ export class CategoryService {
     return this.repository.delete({ category_id: data.category_id });
   }
 
-  getCategoryByID(id: string) {
-    return this.repository.findOneBy({ category_id: id });
+  async getCategoryByID(id: string) {
+    const result = await this.repository.findOneBy({ category_id: id });
+    if (result === null) {
+      throw new HttpException('Категория не найдена', HttpStatus.NOT_FOUND);
+    }
+    return result;
   }
 
   async updateCategory(data: CreateCategoryDto, file?: Express.Multer.File) {
