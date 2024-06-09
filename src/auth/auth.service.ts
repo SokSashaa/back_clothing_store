@@ -38,6 +38,7 @@ export class AuthService {
       await Promise.reject('');
       // else throw new BadRequestException('Пользователь с такой почтой существует')
     } catch (err) {
+      console.log('err', err);
       throw new ForbiddenException('Ошибка при регистрации');
     }
   }

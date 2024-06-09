@@ -1,11 +1,13 @@
 import { Roles } from '../consts/enums';
 import { IsDate, IsEmail, IsEnum, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
-  @IsString()
+  // @IsString()
   @ApiProperty({
     default: '1',
+    required: false,
   })
   id: string;
 
@@ -29,6 +31,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     default: 'Qwerty123!',
+    required: false,
   })
   @IsString()
   password: string;
@@ -43,11 +46,13 @@ export class CreateUserDto {
     default: '12.12.2010',
   })
   @IsDate()
+  @Type(() => Date)
   date_reg: Date;
 
   @ApiProperty({
     default: '01.01.1999',
   })
   @IsDate()
+  @Type(() => Date)
   date_birthday: Date;
 }
