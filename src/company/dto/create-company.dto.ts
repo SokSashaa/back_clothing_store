@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class CreateCompanyDto {
-  @IsString()
+  // @IsString()
   @Type(() => String)
   @ApiProperty({ default: '1', required: false })
   id: string;
