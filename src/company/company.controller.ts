@@ -1,6 +1,20 @@
-import { Body, Controller, Delete, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { CompanyService } from './company.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -31,5 +45,12 @@ export class CompanyController {
   @ApiOperation({ summary: 'Обновление компании пользователя' })
   updateInfoCompany(@Body() dto: CreateCompanyDto) {
     return this.companyService.updateInfoCompany(dto);
+  }
+
+  @Get(':inn')
+  @ApiOperation({ summary: 'Поиск компании по инн' })
+  @ApiParam({ name: 'inn', type: 'string' })
+  findCompanyByUNN(@Param('inn') inn: string) {
+    return this.companyService.findCompanyByINN(inn);
   }
 }

@@ -3,7 +3,6 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from './entities/company.entity';
-import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { Roles } from '../user/consts/enums';
 
@@ -51,31 +50,49 @@ export class CompanyService {
   }
 
   async updateInfoCompany(data: CreateCompanyDto) {
-    const result = await this.repository
-      .update(
-        { id: data.id },
-        {
-          name: data.name,
-          inn: data.inn,
-          ogrn: data.ogrn,
-          address: data.address,
-        },
-      )
-      .catch((e) => {
+    const user = await this.userService.findById(data.user_id.toString());
+    if (user.role === Roles.producer || user.role === Roles.admin) {
+      const result = await this.repository
+        .update(
+          { id: data.id },
+          {
+            name: data.name,
+            inn: data.inn,
+            ogrn: data.ogrn,
+            address: data.address,
+            user_id: data.user_id,
+          },
+        )
+        .catch((e) => {
+          throw new HttpException(
+            'Произошла ошибка при обновлении',
+            HttpStatus.BAD_REQUEST,
+          );
+        });
+      if (result.affected > 0) return result;
+      else
         throw new HttpException(
-          'Произошла ошибка при обновлении',
+          'Компания для обновления не найдена',
           HttpStatus.BAD_REQUEST,
         );
-      });
-    if (result.affected > 0) return result;
-    else
+    } else
       throw new HttpException(
-        'Компания для обновления не найдена',
+        'Пользователь не продавец',
         HttpStatus.BAD_REQUEST,
       );
   }
 
-  async changeUserCompany(oldUser: User, newUser: string) {
-    return null;
+  async findCompanyByINN(inn: string) {
+    const result = (
+      await this.repository
+        .createQueryBuilder('comp')
+        .where('comp.inn like :inn', { inn: `%${inn}%` })
+        .innerJoinAndSelect('comp.user_id', 'user')
+        .getMany()
+    ).map((item) => ({
+      ...item,
+      user_id: { id: item.user_id.id, email: item.user_id.email },
+    }));
+    return result;
   }
 }
