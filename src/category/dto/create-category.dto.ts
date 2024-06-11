@@ -16,7 +16,7 @@ export class CreateCategoryDto {
     type: 'string',
     format: 'binary',
   })
-  @IsString()
+  // @IsString()
   @IsOptional()
   category_img_name: string;
 }
