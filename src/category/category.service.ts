@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import * as fs from 'node:fs/promises';
 import { pathUploadCategory } from './storageFilesCategories';
 
@@ -56,11 +56,12 @@ export class CategoryService {
   }
 
   async updateCategory(data: CreateCategoryDto, file?: Express.Multer.File) {
+    console.log(file);
     const categoryFound = await this.repository.findOneBy({
       category_id: data.category_id,
     });
 
-    if (categoryFound === null) {
+    if (categoryFound === null || !data.category_id) {
       throw new HttpException('Категория не найдена', HttpStatus.NOT_FOUND);
     }
 
@@ -81,5 +82,13 @@ export class CategoryService {
           category_name: data.category_name,
         },
       );
+  }
+
+  async searchCategoryByPartName(name: string) {
+    return this.repository.find({
+      where: {
+        category_name: ILike(`%${name}%`),
+      },
+    });
   }
 }

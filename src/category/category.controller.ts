@@ -70,7 +70,10 @@ export class CategoryController {
 
   @Put()
   @ApiOperation({ summary: 'Обновление категории' })
-  @UseInterceptors(FileInterceptor('file', localOptions))
+  @ApiBearerAuth()
+  @Role(Roles.admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(FileInterceptor('category_img_name', localOptions))
   @ApiConsumes('multipart/form-data')
   updateCategory(
     @Body() dto: CreateCategoryDto,
@@ -78,5 +81,12 @@ export class CategoryController {
     file?: Express.Multer.File,
   ) {
     return this.categoryService.updateCategory(dto, file);
+  }
+
+  @Get('/search/:name')
+  @ApiOperation({ summary: 'Поиск по части наименования' })
+  @ApiParam({ name: 'name', type: 'string' })
+  searchCategoryByPartName(@Param('name') name: string) {
+    return this.categoryService.searchCategoryByPartName(name);
   }
 }
