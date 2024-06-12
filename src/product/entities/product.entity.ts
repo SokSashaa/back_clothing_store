@@ -38,11 +38,11 @@ export class Product {
   product_discount: number;
 
   @ManyToOne(() => Category, (category) => category.category_id)
-  @JoinColumn()
+  @JoinColumn({ name: 'category_id' })
   @Type(() => Category)
   category: Category;
 
   @ManyToOne(() => Company, (company: Company) => company.id)
-  @JoinColumn()
+  @JoinColumn({ name: 'company_id' })
   company: Company;
 }

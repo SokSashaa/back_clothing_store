@@ -5,11 +5,13 @@ import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
 import * as fs from 'node:fs/promises';
 import { pathUploadProduct } from './storageFilesProducts';
+import { CompanyService } from '../company/company.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product) private repository: Repository<Product>,
+    private companyService: CompanyService,
   ) {}
 
   private delFileImage = async (image_name: string) => {
@@ -110,33 +112,35 @@ export class ProductService {
         HttpStatus.NOT_FOUND,
       );
     }
-    if ('product_image' in files) {
-      const product_image = productFound.product_image;
-      const resultFilename = this.createFilenameString(files);
-      return this.repository
-        .update(
-          { product_id: data.product_id },
-          {
-            article: data.article,
-            product_name: data.product_name,
-            product_description: data.product_description,
-            product_price: data.product_price,
-            product_discount: data.product_discount,
-            product_image: resultFilename,
-            category: data.category_id,
-          },
-        )
-        .catch(async () => {
-          isError = true;
-          await this.delFileImage(resultFilename); // delete new files
-          throw new HttpException(
-            'Не удалось обновить',
-            HttpStatus.BAD_REQUEST,
-          );
-        })
-        .finally(async () => {
-          if (!isError) await this.delFileImage(product_image); // delete old files
-        });
+    if (files) {
+      if ('product_image' in files) {
+        const product_image = productFound.product_image;
+        const resultFilename = this.createFilenameString(files);
+        return this.repository
+          .update(
+            { product_id: data.product_id },
+            {
+              article: data.article,
+              product_name: data.product_name,
+              product_description: data.product_description,
+              product_price: data.product_price,
+              product_discount: data.product_discount,
+              product_image: resultFilename,
+              category: data.category_id,
+            },
+          )
+          .catch(async () => {
+            isError = true;
+            await this.delFileImage(resultFilename); // delete new files
+            throw new HttpException(
+              'Не удалось обновить',
+              HttpStatus.BAD_REQUEST,
+            );
+          })
+          .finally(async () => {
+            if (!isError) await this.delFileImage(product_image); // delete old files
+          });
+      }
     } else
       return this.repository
         .update(
@@ -156,5 +160,24 @@ export class ProductService {
             HttpStatus.BAD_REQUEST,
           );
         });
+  }
+
+  async findProductsByCompany(id: string) {
+    const company = await this.companyService.findCompanyByUser(id);
+    if (company) {
+      return this.repository
+        .createQueryBuilder('pr')
+        .where('pr.company_id=:id', { id: company.id })
+        .innerJoinAndSelect('pr.category', 'category_id')
+        .getMany();
+
+      // return this.repository.find({
+      //   where: {
+      //     company: {
+      //       id: user.id,
+      //     },
+      //   },
+      // });
+    }
   }
 }

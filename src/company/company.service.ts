@@ -95,4 +95,18 @@ export class CompanyService {
     }));
     return result;
   }
+
+  async findCompanyByUser(user_id: string) {
+    const result = await this.repository.findOneBy({
+      user_id: {
+        id: user_id,
+      },
+    });
+    if (result) return result;
+    else
+      throw new HttpException(
+        'Компания на данного юзера не зарегистрирована',
+        HttpStatus.NOT_FOUND,
+      );
+  }
 }

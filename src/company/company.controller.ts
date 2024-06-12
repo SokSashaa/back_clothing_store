@@ -53,4 +53,11 @@ export class CompanyController {
   findCompanyByUNN(@Param('inn') inn: string) {
     return this.companyService.findCompanyByINN(inn);
   }
+
+  @Get('/user/:user_id')
+  @ApiOperation({ summary: 'Поиск компании по user' })
+  @ApiParam({ name: 'user_id', type: 'string' })
+  findCompanyByUser(@Param('user_id') user_id: string) {
+    return this.companyService.findCompanyByUser(user_id);
+  }
 }

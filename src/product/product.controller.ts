@@ -105,4 +105,13 @@ export class ProductController {
   searchAllProductsByPartName(@Param('name') partName: string) {
     return this.productService.searchAllProductByPartName(partName);
   }
+
+  @Get('/search/company/:user_id')
+  @ApiOperation({
+    summary: 'Поиск продуктов по пользователю, на которого привязана компания',
+  })
+  @ApiParam({ name: 'user_id', type: 'string' })
+  searchAllProductsByCompany(@Param('user_id') id: string) {
+    return this.productService.findProductsByCompany(id);
+  }
 }
