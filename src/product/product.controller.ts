@@ -75,6 +75,7 @@ export class ProductController {
     @Body() dto: CreateProductDto,
     @UploadedFiles() file?: Express.Multer.File[],
   ) {
+    console.log('cont', dto);
     return this.productService.updateProduct(dto, file);
   }
 

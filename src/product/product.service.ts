@@ -112,37 +112,35 @@ export class ProductService {
         HttpStatus.NOT_FOUND,
       );
     }
-    if (files) {
-      if ('product_image' in files) {
-        const product_image = productFound.product_image;
-        const resultFilename = this.createFilenameString(files);
-        return this.repository
-          .update(
-            { product_id: data.product_id },
-            {
-              article: data.article,
-              product_name: data.product_name,
-              product_description: data.product_description,
-              product_price: data.product_price,
-              product_discount: data.product_discount,
-              product_image: resultFilename,
-              category: data.category_id,
-            },
-          )
-          .catch(async () => {
-            isError = true;
-            await this.delFileImage(resultFilename); // delete new files
-            throw new HttpException(
-              'Не удалось обновить',
-              HttpStatus.BAD_REQUEST,
-            );
-          })
-          .finally(async () => {
-            if (!isError) await this.delFileImage(product_image); // delete old files
-          });
-      }
-    } else
+    if (files && 'product_image' in files) {
+      const product_image = productFound.product_image;
+      const resultFilename = this.createFilenameString(files);
       return this.repository
+        .update(
+          { product_id: data.product_id },
+          {
+            article: data.article,
+            product_name: data.product_name,
+            product_description: data.product_description,
+            product_price: data.product_price,
+            product_discount: data.product_discount,
+            product_image: resultFilename,
+            category: data.category_id,
+          },
+        )
+        .catch(async () => {
+          isError = true;
+          await this.delFileImage(resultFilename); // delete new files
+          throw new HttpException(
+            'Не удалось обновить',
+            HttpStatus.BAD_REQUEST,
+          );
+        })
+        .finally(async () => {
+          if (!isError) await this.delFileImage(product_image); // delete old files
+        });
+    } else {
+      const r = await this.repository
         .update(
           { product_id: data.product_id },
           {
@@ -160,6 +158,8 @@ export class ProductService {
             HttpStatus.BAD_REQUEST,
           );
         });
+      return r;
+    }
   }
 
   async findProductsByCompany(id: string) {
