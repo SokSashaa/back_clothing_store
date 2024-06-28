@@ -13,6 +13,7 @@ import * as process from 'process';
 import { ConfigModule } from '@nestjs/config';
 import { CompanyModule } from './company/company.module';
 import { Company } from './company/entities/company.entity';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -32,6 +33,9 @@ import { Company } from './company/entities/company.entity';
       synchronize: true,
     }),
     CompanyModule,
+    CacheModule.register({
+      ttl: 1000,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

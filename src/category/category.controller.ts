@@ -25,6 +25,7 @@ import { Roles } from '../user/consts/enums';
 import { Role } from '../decorators/role.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('category')
 @ApiTags('category')
@@ -85,6 +86,7 @@ export class CategoryController {
 
   @Get('/search/:name')
   @ApiOperation({ summary: 'Поиск по части наименования' })
+  @UseInterceptors(CacheInterceptor)
   @ApiParam({ name: 'name', type: 'string' })
   searchCategoryByPartName(@Param('name') name: string) {
     return this.categoryService.searchCategoryByPartName(name);

@@ -25,6 +25,7 @@ import { Role } from '../decorators/role.decorator';
 import { Roles } from '../user/consts/enums';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('product')
 @ApiTags('product')
@@ -80,6 +81,7 @@ export class ProductController {
   }
 
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Поиск по айди продукта' })
   @ApiParam({ name: 'id', type: 'string' })
   getProductById(@Param('id') id: string) {
@@ -88,6 +90,7 @@ export class ProductController {
 
   @Get('category/:id')
   @ApiOperation({ summary: 'Поиск всех продуктов по айди категории' })
+  @UseInterceptors(CacheInterceptor)
   @ApiParam({ name: 'id', type: 'string' })
   getAllProductsByIDCategory(@Param('id') id: string) {
     return this.productService.getAllProductsByIDCategory(id);
@@ -95,6 +98,7 @@ export class ProductController {
 
   @Get('/search/:name')
   @ApiOperation({ summary: 'Поиск по названию всех продуктов (лимит 10)' })
+  @UseInterceptors(CacheInterceptor)
   @ApiParam({ name: 'name', type: 'string' })
   searchTenProductsByPartName(@Param('name') partName: string) {
     return this.productService.searchTenProductByPartName(partName);
@@ -102,6 +106,7 @@ export class ProductController {
 
   @Get('/searchAll/:name')
   @ApiOperation({ summary: 'Поиск по названию всех продуктов' })
+  @UseInterceptors(CacheInterceptor)
   @ApiParam({ name: 'name', type: 'string' })
   searchAllProductsByPartName(@Param('name') partName: string) {
     return this.productService.searchAllProductByPartName(partName);
@@ -111,6 +116,7 @@ export class ProductController {
   @ApiOperation({
     summary: 'Поиск продуктов по пользователю, на которого привязана компания',
   })
+  @UseInterceptors(CacheInterceptor)
   @ApiParam({ name: 'user_id', type: 'string' })
   searchAllProductsByCompany(@Param('user_id') id: string) {
     return this.productService.findProductsByCompany(id);

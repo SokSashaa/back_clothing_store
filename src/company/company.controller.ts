@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import {
@@ -20,6 +21,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { Role } from '../decorators/role.decorator';
 import { Roles } from '../user/consts/enums';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('company')
 @ApiTags('company')
@@ -48,6 +50,7 @@ export class CompanyController {
   }
 
   @Get(':inn')
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Поиск компании по инн' })
   @ApiParam({ name: 'inn', type: 'string' })
   findCompanyByUNN(@Param('inn') inn: string) {
@@ -55,6 +58,7 @@ export class CompanyController {
   }
 
   @Get('/user/:user_id')
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Поиск компании по user' })
   @ApiParam({ name: 'user_id', type: 'string' })
   findCompanyByUser(@Param('user_id') user_id: string) {

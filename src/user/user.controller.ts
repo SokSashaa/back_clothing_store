@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -21,6 +22,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from './consts/enums';
 import { Role } from '../decorators/role.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('user')
 @ApiTags('user')
@@ -58,6 +60,7 @@ export class UserController {
   }
 
   @Get('/getUserEmail/:email')
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Получение пользователя по email' })
   @ApiParam({ name: 'email', type: 'string' })
   findUserByEmail(@Param('email') email: string) {
