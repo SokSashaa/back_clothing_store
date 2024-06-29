@@ -35,6 +35,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     CompanyModule,
     CacheModule.register({
       ttl: 1000,
+      isGlobal: true,
     }),
   ],
   controllers: [AppController],
