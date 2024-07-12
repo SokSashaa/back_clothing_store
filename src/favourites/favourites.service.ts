@@ -18,10 +18,13 @@ export class FavouritesService {
       data.product.product_id,
     );
     if (product) {
-      return this.repository.save({
+      const saveFavourite = await this.repository.save({
         product: product,
         user: user,
       });
+
+      const { user: _, ...saved } = saveFavourite;
+      return saved;
     }
   }
 
