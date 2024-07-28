@@ -13,10 +13,17 @@ export class UserService {
     private repository: Repository<User>,
   ) {}
 
-  async create(dto: CreateUserDto) {
+  private async hashingPassword(password: string) {
     const salt = await genSalt(10);
+    const hashedPassword = await hash(password, salt);
+    return hashedPassword;
+  }
 
-    const hashedPassword = await hash(dto.password, salt);
+  async create(dto: CreateUserDto) {
+    // const salt = await genSalt(10);
+    //
+    // const hashedPassword = await hash(dto.password, salt);
+    const hashedPassword = await this.hashingPassword(dto.password);
 
     const newUser = this.repository.create({
       ...dto,
@@ -24,6 +31,19 @@ export class UserService {
     });
 
     return await this.repository.save(newUser);
+  }
+
+  async changePasswordUser(user_id: string, data: { password: string }) {
+    // const salt = await genSalt(10);
+    //
+    // const hashedPassword = await hash(data.password, salt);
+
+    const hashedPassword = await this.hashingPassword(data.password);
+
+    return await this.repository.update(
+      { id: user_id },
+      { password: hashedPassword },
+    );
   }
 
   async findByEmail(email: string) {

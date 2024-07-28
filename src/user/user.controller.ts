@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Inject,
   Param,
   Post,
   Put,
@@ -14,6 +13,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiParam,
   ApiTags,
@@ -24,6 +24,7 @@ import { Roles } from './consts/enums';
 import { Role } from '../decorators/role.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CacheInterceptor } from '@nestjs/cache-manager';
+import { UserMe } from '../decorators/user_me.decorator';
 
 @Controller('user')
 @ApiTags('user')
@@ -66,5 +67,22 @@ export class UserController {
   @ApiParam({ name: 'email', type: 'string' })
   findUserByEmail(@Param('email') email: string) {
     return this.userService.findUserByEmail(email);
+  }
+
+  @Put('/changePassword')
+  @ApiOperation({ summary: 'Обновление пароля' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        password: {
+          type: 'string',
+          default: 'Qwerty456!',
+        },
+      },
+    },
+  })
+  changePasswordUser(@UserMe() user, @Body() data: { password: string }) {
+    return this.userService.changePasswordUser(user.id, data);
   }
 }
