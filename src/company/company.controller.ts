@@ -31,6 +31,13 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
+  @Get('/all')
+  @UseInterceptors(CacheInterceptor)
+  @ApiOperation({ summary: 'Получение всех названий компаний' })
+  getAllCompanies() {
+    return this.companyService.getAllCompanies();
+  }
+
   @Post()
   @ApiOperation({ summary: 'Создание компании пользователя' })
   createCompany(@Body() dto: CreateCompanyDto) {

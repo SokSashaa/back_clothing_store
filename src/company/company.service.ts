@@ -109,4 +109,12 @@ export class CompanyService {
         HttpStatus.NOT_FOUND,
       );
   }
+
+  async getAllCompanies(): Promise<Company[]> {
+    return this.repository
+      .createQueryBuilder('c')
+      .select('c.id')
+      .addSelect('c.name')
+      .getMany();
+  }
 }
