@@ -22,6 +22,7 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { Role } from '../decorators/role.decorator';
 import { Roles } from '../user/consts/enums';
 import { CacheInterceptor } from '@nestjs/cache-manager';
+import { Public } from '../decorators/public.decorator';
 
 @Controller('company')
 @ApiTags('company')
@@ -32,6 +33,7 @@ export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Get('/all')
+  @Public()
   @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Получение всех названий компаний' })
   getAllCompanies() {

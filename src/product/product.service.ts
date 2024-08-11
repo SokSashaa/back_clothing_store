@@ -83,9 +83,35 @@ export class ProductService {
   }
 
   getAllProductsByIDCategory(id: string) {
-    return this.repository.findBy({
-      category: { category_id: id },
-    });
+    return this.repository.query(
+      `select * from product where category_id=${id}`,
+    );
+    // return this.repository.find({
+    //   where: { category: { category_id: id } },
+    //   select: {
+    //     product_id: true,
+    //     product_price: true,
+    //     product_discount: true,
+    //     product_name: true,
+    //     product_description: true,
+    //     product_image: true,
+    //     article: true,
+    //     company: { id: true },
+    //   },
+    // });
+    // return this.repository
+    //   .createQueryBuilder('pr')
+    //   .select('*')
+    //   .where('pr.category_id =:id', { id: id })
+    //   .getMany();
+    // .select('pr.product_id')
+    // .addSelect('pr.article')
+    // .addSelect('pr.product_name')
+    // .addSelect('pr.product_description')
+    // .addSelect('pr.product_image')
+    // .addSelect('pr.product_price')
+    // .addSelect('pr.product_discount')
+    // .addSelect('pr.company_id')
   }
 
   searchTenProductByPartName(partName: string) {
