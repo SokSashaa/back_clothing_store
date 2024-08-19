@@ -16,6 +16,8 @@ import { Company } from './company/entities/company.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { FavouritesModule } from './favourites/favourites.module';
 import { Favourite } from './favourites/entities/favourite.entity';
+import { CartModule } from './cart/cart.module';
+import { Cart } from './cart/entities/cart.entity';
 
 @Module({
   imports: [
@@ -31,7 +33,7 @@ import { Favourite } from './favourites/entities/favourite.entity';
       username: process.env.POSTGRESS_DB_USER,
       password: process.env.POSTGRESS_DB_PASSWORD,
       database: process.env.POSTGRESS_DB_NAME,
-      entities: [User, Category, Product, Company, Favourite],
+      entities: [User, Category, Product, Company, Favourite, Cart],
       synchronize: true,
     }),
     CompanyModule,
@@ -40,6 +42,7 @@ import { Favourite } from './favourites/entities/favourite.entity';
       isGlobal: true,
     }),
     FavouritesModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService],
