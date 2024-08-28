@@ -5,10 +5,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cart } from './entities/cart.entity';
 import { User } from '../user/entities/user.entity';
+import { Product } from '../product/entities/product.entity';
 
 @Injectable()
 export class CartService {
-  constructor(@InjectRepository(Cart) private repository: Repository<Cart>) {}
+  constructor(
+    @InjectRepository(Cart) private repository: Repository<Cart>,
+    @InjectRepository(Product) private productRep: Repository<Product>,
+  ) {}
 
   async create(data: CreateCartDto, user: User) {
     return this.repository

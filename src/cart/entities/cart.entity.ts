@@ -16,4 +16,7 @@ export class Cart {
 
   @Column()
   count_product: number;
+
+  @Column({ generated: 'increment' })
+  id_cart: number;
 }

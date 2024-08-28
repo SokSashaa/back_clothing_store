@@ -11,4 +11,7 @@ export class CreateCartDto {
 
   @ApiProperty({ default: '1', minimum: 0 })
   count_product: number;
+
+  @ApiProperty({ default: 1 })
+  id_cart: number;
 }
