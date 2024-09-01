@@ -50,7 +50,7 @@ export class OrdersController {
 
   @Get()
   @ApiOperation({ summary: 'Получение заказов по юзеру' })
-  getOrderByUser(@UserMe() user: User) {
+  getOrdersByUser(@UserMe() user: User) {
     return this.ordersService.getOrdersByUser(user);
   }
 

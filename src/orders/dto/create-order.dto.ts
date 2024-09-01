@@ -40,10 +40,4 @@ export class CreateOrderDto {
     default: 10,
   })
   client: User;
-
-  @ApiProperty({
-    default: [47],
-    required: false,
-  })
-  sellers: Company[];
 }
