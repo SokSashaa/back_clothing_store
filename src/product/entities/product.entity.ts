@@ -44,5 +44,5 @@ export class Product {
 
   @ManyToOne(() => Company, (company: Company) => company.id)
   @JoinColumn({ name: 'company_id' })
-  company: Company;
+  company_id: Company;
 }

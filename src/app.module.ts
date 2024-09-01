@@ -20,6 +20,8 @@ import { CartModule } from './cart/cart.module';
 import { Cart } from './cart/entities/cart.entity';
 import { HistoryBuy } from './history_buy/entities/history_buy.entity';
 import { HistoryBuyModule } from './history_buy/history_buy.module';
+import { OrdersModule } from './orders/orders.module';
+import { Order } from './orders/entities/order.entity';
 
 @Module({
   imports: [
@@ -35,7 +37,16 @@ import { HistoryBuyModule } from './history_buy/history_buy.module';
       username: process.env.POSTGRESS_DB_USER,
       password: process.env.POSTGRESS_DB_PASSWORD,
       database: process.env.POSTGRESS_DB_NAME,
-      entities: [User, Category, Product, Company, Favourite, Cart, HistoryBuy],
+      entities: [
+        User,
+        Category,
+        Product,
+        Company,
+        Favourite,
+        Cart,
+        HistoryBuy,
+        Order,
+      ],
       synchronize: true,
     }),
     CompanyModule,
@@ -46,6 +57,7 @@ import { HistoryBuyModule } from './history_buy/history_buy.module';
     FavouritesModule,
     CartModule,
     HistoryBuyModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
