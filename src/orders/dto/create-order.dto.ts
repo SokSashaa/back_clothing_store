@@ -1,7 +1,6 @@
 import { User } from '../../user/entities/user.entity';
 import { statusOrderEnum } from '../enums';
 import { Product } from '../../product/entities/product.entity';
-import { Company } from '../../company/entities/company.entity';
 import { IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -40,4 +39,6 @@ export class CreateOrderDto {
     default: 10,
   })
   client: User;
+
+  date: Date;
 }

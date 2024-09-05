@@ -26,4 +26,7 @@ export class Order {
   @ManyToOne(() => User, (user) => user.id)
   @JoinColumn({ name: 'client_id' })
   client: User;
+
+  @Column()
+  date: Date;
 }

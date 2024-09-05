@@ -43,7 +43,7 @@ export class OrdersService {
         .where(' prod.product_id=:id ', {
           id: data.products[i].product_id,
         })
-        .innerJoinAndSelect('prod.company', 'c', 'c.id=prod.company_id')
+        .innerJoinAndSelect('prod.company_id', 'c', 'c.id=prod.company_id')
         .getOne();
 
       if (!product)
@@ -59,6 +59,7 @@ export class OrdersService {
       client: user,
       status: statusOrderEnum.waiting,
       products: products,
+      date: new Date(),
     });
   }
 
