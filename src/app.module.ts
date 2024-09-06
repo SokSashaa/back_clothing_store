@@ -22,6 +22,7 @@ import { HistoryBuy } from './history_buy/entities/history_buy.entity';
 import { HistoryBuyModule } from './history_buy/history_buy.module';
 import { OrdersModule } from './orders/orders.module';
 import { Order } from './orders/entities/order.entity';
+import { OrderItem } from './orders/entities/orderItem.entity';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { Order } from './orders/entities/order.entity';
         Cart,
         HistoryBuy,
         Order,
+        OrderItem,
       ],
       synchronize: true,
     }),

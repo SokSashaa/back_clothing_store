@@ -7,37 +7,46 @@ import { Repository } from 'typeorm';
 import { Product } from '../product/entities/product.entity';
 import { User } from '../user/entities/user.entity';
 import { statusOrderEnum } from './enums';
+import { OrderItem } from './entities/orderItem.entity';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(Order) private repository: Repository<Order>,
     @InjectRepository(Product) private product_repository: Repository<Product>,
+    @InjectRepository(OrderItem)
+    private orderItem_repository: Repository<OrderItem>,
   ) {}
 
-  private getArrayProducts = async (products) => {
-    const arrProducts: Product[] = [];
+  private getObjectWithOrderItems = async (orders: Order[]) => {
+    const result = [];
+    for (let i = 0; i < orders.length; i++) {
+      const orderItems = await this.orderItem_repository
+        .createQueryBuilder('oi')
+        .where('oi.order=:id', { id: orders[i].id_order })
+        .innerJoinAndSelect('oi.product', 'p')
+        .getMany();
 
-    for (let i = 0; i < products.length; i++) {
-      const product = await this.product_repository
-        .createQueryBuilder('p')
-        .where('p.product_id=:id', { id: products[i] })
-        .innerJoinAndSelect('p.company_id', 'c')
-        .innerJoinAndSelect('p.category', 'cat')
-        .getOne();
-
-      arrProducts.push({
-        ...product,
-        company_id: product.company_id,
-        category: product.category,
-      });
+      result[i] = { ...orders[i], order_item: orderItems };
     }
-    return arrProducts;
+    return result;
   };
 
   async create(user: User, data: CreateOrderDto) {
-    const products = [];
+    const queryRunner = this.repository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction(); // запуск транзакции
+
+    const order = await queryRunner.manager.insert(Order, {
+      ...data,
+      client: user,
+      status: statusOrderEnum.waiting,
+      date: new Date(),
+    }); //вставка заказа
+    const { id_order } = order.identifiers[0]; //получение id заказа
+
     for (let i = 0; i < data.products.length; i++) {
+      //проверяем все продукты
       const product = await this.product_repository
         .createQueryBuilder('prod')
         .where(' prod.product_id=:id ', {
@@ -46,21 +55,25 @@ export class OrdersService {
         .innerJoinAndSelect('prod.company_id', 'c', 'c.id=prod.company_id')
         .getOne();
 
-      if (!product)
+      if (!product) {
+        await queryRunner.rollbackTransaction();
         throw new HttpException(
           `Продукт с id ${data.products[i].product_id} не найден`,
           HttpStatus.NOT_FOUND,
         );
-      products.push(product.product_id);
+      }
+
+      await queryRunner.manager.insert(OrderItem, {
+        id_order: id_order,
+        product: product,
+        product_count: data.products[i].count,
+        product_discount: product.product_discount,
+        product_price: product.product_price,
+      });
     }
 
-    return this.repository.insert({
-      ...data,
-      client: user,
-      status: statusOrderEnum.waiting,
-      products: products,
-      date: new Date(),
-    });
+    await queryRunner.commitTransaction();
+    return HttpStatus.OK;
   }
 
   async getOrderByID(id: number) {
@@ -70,10 +83,10 @@ export class OrdersService {
       },
     });
 
-    const products = await this.getArrayProducts(order.products);
+    const result = await this.getObjectWithOrderItems([order]);
     return {
       ...order,
-      products: products,
+      order_item: result,
     };
   }
 
@@ -83,35 +96,14 @@ export class OrdersService {
       .where('o.client_id=:id', { id: id_user })
       .getMany();
 
-    for (let i = 0; i < orders.length; i++) {
-      const products = await this.getArrayProducts(orders[i].products);
-      orders[i] = { ...orders[i], products: products };
-    }
-
-    return orders;
+    const result = await this.getObjectWithOrderItems(orders);
+    return result;
   }
 
   async getOrdersByUser(user: User) {
     const orders = await this.repository.findBy({ client: user });
-    for (let i = 0; i < orders.length; i++) {
-      const products = await this.getArrayProducts(orders[i].products);
-      orders[i] = { ...orders[i], products: products };
-    }
-    return orders;
-  }
-
-  async getReceiveOrdersByUser(user: User) {
-    const orders = await this.repository.findBy({
-      client: user,
-      status: statusOrderEnum.receive,
-    });
-
-    for (let i = 0; i < orders.length; i++) {
-      const products = await this.getArrayProducts(orders[i].products);
-      orders[i] = { ...orders[i], products: products };
-    }
-
-    return orders;
+    const result = await this.getObjectWithOrderItems(orders);
+    return result;
   }
 
   update(data: UpdateOrderDto) {
@@ -123,7 +115,13 @@ export class OrdersService {
     );
   }
 
-  remove(id: number) {
-    return this.repository.delete({ id_order: id });
+  async remove(id: number) {
+    const delete_items = await this.orderItem_repository.delete({
+      id_order: id,
+    });
+
+    if (delete_items.affected > 0) {
+      return this.repository.delete({ id_order: id });
+    } else throw new HttpException('Заказ не найден', HttpStatus.NOT_FOUND);
   }
 }

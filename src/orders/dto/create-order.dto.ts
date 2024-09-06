@@ -15,13 +15,18 @@ export class CreateOrderDto {
     default: [
       {
         product_id: 96,
+        count: 1,
       },
       {
         product_id: 97,
+        count: 2,
       },
     ],
   })
-  products: Product[];
+  products: {
+    product_id: Product;
+    count: number;
+  }[];
 
   @IsEnum(statusOrderEnum)
   @ApiProperty({

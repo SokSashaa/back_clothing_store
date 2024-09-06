@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
   Put,
   UseGuards,
@@ -23,12 +22,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 @UseGuards(JwtAuthGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
-
-  @Get('/receive')
-  @ApiOperation({ summary: 'Получение полученных заказов по юзеру' })
-  getReceiveOrdersByUser(@UserMe() user: User) {
-    return this.ordersService.getReceiveOrdersByUser(user);
-  }
 
   @Post()
   @ApiOperation({ summary: 'Создание покупки' })
