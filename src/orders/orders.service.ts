@@ -47,10 +47,11 @@ export class OrdersService {
 
     for (let i = 0; i < data.products.length; i++) {
       //проверяем все продукты
+      console.log('test');
       const product = await this.product_repository
         .createQueryBuilder('prod')
         .where(' prod.product_id=:id ', {
-          id: data.products[i].product_id,
+          id: data.products[i].product_id.product_id,
         })
         .innerJoinAndSelect('prod.company_id', 'c', 'c.id=prod.company_id')
         .getOne();

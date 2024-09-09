@@ -28,7 +28,7 @@ export class CreateOrderDto {
     count: number;
   }[];
 
-  @IsEnum(statusOrderEnum)
+  // @IsEnum(statusOrderEnum)
   @ApiProperty({
     default: 0,
     required: false,

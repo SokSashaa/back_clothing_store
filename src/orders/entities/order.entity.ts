@@ -16,7 +16,7 @@ export class Order {
   @Column()
   status: statusOrderEnum;
 
-  @Column()
+  @Column({ type: 'float' })
   sum_order: number;
 
   @ManyToOne(() => User, (user) => user.id)
