@@ -23,6 +23,12 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  @Get('/company')
+  @ApiOperation({ summary: 'Получение заказов по компании' })
+  getOrdersCompany(@UserMe() user: User) {
+    return this.ordersService.getOrdersMyCompany(user);
+  }
+
   @Post()
   @ApiOperation({ summary: 'Создание покупки' })
   create(@UserMe() user: User, @Body() data: CreateOrderDto) {

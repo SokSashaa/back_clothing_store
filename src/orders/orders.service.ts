@@ -125,4 +125,15 @@ export class OrdersService {
       return this.repository.delete({ id_order: id });
     } else throw new HttpException('Заказ не найден', HttpStatus.NOT_FOUND);
   }
+
+  async getOrdersMyCompany(user: User) {
+    return this.repository
+      .createQueryBuilder('or')
+      .innerJoinAndSelect('or.order_item', 'oi')
+      .innerJoinAndSelect('oi.product', 'p')
+      .innerJoin('p.company_id', 'c')
+      .innerJoin('c.user_id', 'user')
+      .where('user.id=:id', { id: user.id })
+      .getMany();
+  }
 }

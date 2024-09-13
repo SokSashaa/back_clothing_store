@@ -3,10 +3,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { statusOrderEnum } from '../enums';
 import { User } from '../../user/entities/user.entity';
+import { OrderItem } from './orderItem.entity';
 
 @Entity()
 export class Order {
@@ -25,4 +27,7 @@ export class Order {
 
   @Column()
   date: Date;
+
+  @OneToMany(() => OrderItem, (order_item) => order_item.id_order)
+  order_item: OrderItem[];
 }
