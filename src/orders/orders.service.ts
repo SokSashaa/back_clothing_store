@@ -8,6 +8,7 @@ import { Product } from '../product/entities/product.entity';
 import { User } from '../user/entities/user.entity';
 import { statusOrderEnum } from './enums';
 import { OrderItem } from './entities/orderItem.entity';
+import { Cart } from '../cart/entities/cart.entity';
 
 @Injectable()
 export class OrdersService {
@@ -47,7 +48,6 @@ export class OrdersService {
 
     for (let i = 0; i < data.products.length; i++) {
       //проверяем все продукты
-      console.log('test');
       const product = await this.product_repository
         .createQueryBuilder('prod')
         .where(' prod.product_id=:id ', {
@@ -70,6 +70,11 @@ export class OrdersService {
         product_count: data.products[i].count,
         product_discount: product.product_discount,
         product_price: product.product_price,
+      });
+
+      await queryRunner.manager.delete(Cart, {
+        id_user: user.id,
+        id_product: product.product_id,
       });
     }
 
