@@ -24,7 +24,7 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Get('/company')
-  @ApiOperation({ summary: 'Получение заказов по компании' })
+  @ApiOperation({ summary: 'Получение заказов по компании своей' })
   getOrdersCompany(@UserMe() user: User) {
     return this.ordersService.getOrdersMyCompany(user);
   }

@@ -134,10 +134,12 @@ export class OrdersService {
   async getOrdersMyCompany(user: User) {
     return this.repository
       .createQueryBuilder('or')
+      .innerJoin('or.client', 'us')
+      .addSelect('us.email')
       .innerJoinAndSelect('or.order_item', 'oi')
       .innerJoinAndSelect('oi.product', 'p')
       .innerJoin('p.company_id', 'c')
-      .innerJoin('c.user_id', 'user')
+      .innerJoinAndSelect('c.user_id', 'user')
       .where('user.id=:id', { id: user.id })
       .getMany();
   }
